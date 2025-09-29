@@ -4,22 +4,39 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
+    private Connection connection;
+
     private static DatabaseConnection instance;
 
     private String url = "jdbc:mysql://localhost:3306/nameOfDatabse";
     private String username = "root";
     private String password = "";
 
-    public static DatabaseConnection getInstance() {
+    private DatabaseConnection() throws SQLException {
+        try {
+            String url = "jdbc:mysql://localhost/janispit";
+            String username = "root";
+            String password = "";
+            connection = DriverManager.getConnection(url, username, password);
+            System.out.println("Konekcija uspesno uspostavljena");
+            connection.setAutoCommit(false);
+            ;
+        } catch (Exception e) {
+            System.out.println("Greska, konekcija sa bazom nije usposavljena!");
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+    public static DatabaseConnection getInstance() throws SQLException {
         if (instance == null) {
             instance = new DatabaseConnection();
         }
         return instance;
     }
 
-    public Connection getConnection() throws SQLException {
-        Connection connection = DriverManager.getConnection(url, username, password);
-        connection.setAutoCommit(false);
+    public synchronized Connection getConnection() throws SQLException {
         return connection;
     }
 
